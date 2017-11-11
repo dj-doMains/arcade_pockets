@@ -53,7 +53,7 @@ namespace ArcadePockets.Managers.Jwt
             return new JwtSecurityToken()
             {
                 AccessToken = DateTime.Now.Millisecond.ToString(),
-                Expiration = DateTime.Now.AddSeconds(20 - _options.EvictionCushion)
+                Expiration = DateTime.Now.AddSeconds(20 - _options.ExpirationCushion)
             };
         }
 
@@ -62,7 +62,7 @@ namespace ArcadePockets.Managers.Jwt
             return new JwtSecurityToken()
             {
                 AccessToken = DateTime.Now.Millisecond.ToString(),
-                Expiration = DateTime.Now.AddSeconds(20 - _options.EvictionCushion)
+                Expiration = DateTime.Now.AddSeconds(20 - _options.ExpirationCushion)
             };
         }
     }

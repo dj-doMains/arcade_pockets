@@ -25,7 +25,7 @@ namespace WebClient
                 .AddInMemoryStore(options =>
                 {
                     options.TokenIssuerUri = "https://identity.myapp.com/token";
-                    options.EvictionCushion = 15;
+                    options.ExpirationCushion = 15;
                 });
 
             services.AddMvc();
