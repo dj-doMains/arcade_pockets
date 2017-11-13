@@ -1,8 +1,14 @@
 using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web;
 using ArcadePockets.Managers.Jwt;
 using ArcadePockets.Models.Jwt;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using System.Text;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ArcadePockets.Managers.Jwt
 {
@@ -11,10 +17,17 @@ namespace ArcadePockets.Managers.Jwt
         IMemoryCache _cache;
         JwtManagerOptions _options;
 
+        static HttpClient _httpClient;
+
         public JwtManager(IMemoryCache cache, IOptions<JwtManagerOptions> options)
         {
             _cache = cache;
             _options = options.Value;
+        }
+
+        static JwtManager()
+        {
+            _httpClient = new HttpClient();
         }
 
         public string AccessToken
@@ -28,13 +41,12 @@ namespace ArcadePockets.Managers.Jwt
                     jwtSecurityToken = GetToken();
 
                     if (jwtSecurityToken != null)
-                    {
                         SetCache(jwtSecurityToken);
-                    }
                 }
 
-                if (DateTime.Now > jwtSecurityToken.Expiration)
-                    SetCache(RefreshToken());
+                if (jwtSecurityToken != null)
+                    if (DateTime.Now > jwtSecurityToken.Expiration.AddSeconds(_options.ExpirationCushion * -1))
+                        SetCache(RefreshToken(jwtSecurityToken.RefreshToken));
 
                 return jwtSecurityToken?.AccessToken;
             }
@@ -50,20 +62,20 @@ namespace ArcadePockets.Managers.Jwt
 
         private JwtSecurityToken GetToken()
         {
-            return new JwtSecurityToken()
-            {
-                AccessToken = DateTime.Now.Millisecond.ToString(),
-                Expiration = DateTime.Now.AddSeconds(20 - _options.ExpirationCushion)
-            };
+            JwtTokenService tokenService = new JwtTokenService(_httpClient);
+
+            JwtSecurityToken token = tokenService.GetToken(_options);
+
+            return token;
         }
 
-        private JwtSecurityToken RefreshToken()
+        private JwtSecurityToken RefreshToken(string refreshToken)
         {
-            return new JwtSecurityToken()
-            {
-                AccessToken = DateTime.Now.Millisecond.ToString(),
-                Expiration = DateTime.Now.AddSeconds(20 - _options.ExpirationCushion)
-            };
+            JwtTokenService tokenService = new JwtTokenService(_httpClient);
+
+            JwtSecurityToken token = tokenService.GetRefreshToken(refreshToken, _options);
+
+            return token;
         }
     }
 }

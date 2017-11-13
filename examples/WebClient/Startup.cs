@@ -24,8 +24,13 @@ namespace WebClient
             services.AddJwtManager()
                 .AddInMemoryStore(options =>
                 {
-                    options.TokenIssuerUri = "https://identity.myapp.com/token";
-                    options.ExpirationCushion = 15;
+                    options.GrantType = ArcadePocketsGrantType.Password;
+                    options.TokenIssuerUri = "http://localhost:50000/connect/token";
+                    options.ExpirationCushion = 3700;
+                    options.ClientID = "2b11357c-668a-4627-b956-c9ad1365c8b3";
+                    options.ClientSecret = "bbda4042-7d7a-4e41-9d8e-27c3ab4a8260";
+                    options.Username = "greendiggle@arcadepockets.com";
+                    options.Password = "arr0wWho?";
                 });
 
             services.AddMvc();
