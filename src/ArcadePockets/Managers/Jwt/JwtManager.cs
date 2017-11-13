@@ -73,7 +73,7 @@ namespace ArcadePockets.Managers.Jwt
         {
             JwtTokenService tokenService = new JwtTokenService(_httpClient);
 
-            JwtSecurityToken token = tokenService.GetRefreshToken(refreshToken, _options);
+            JwtSecurityToken token = tokenService.GetRefreshToken(_options, refreshToken);
 
             return token;
         }

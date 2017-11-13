@@ -24,7 +24,7 @@ namespace WebClient
             services.AddJwtManager()
                 .AddInMemoryStore(options =>
                 {
-                    options.GrantType = ArcadePocketsGrantType.Password;
+                    options.GrantType = ArcadePocketsGrantType.ResourceOwner;
                     options.TokenIssuerUri = "http://localhost:50000/connect/token";
                     options.ExpirationCushion = 3700;
                     options.ClientID = "2b11357c-668a-4627-b956-c9ad1365c8b3";

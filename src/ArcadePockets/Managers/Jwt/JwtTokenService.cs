@@ -19,25 +19,30 @@ namespace ArcadePockets.Managers.Jwt
         {
             switch (options.GrantType)
             {
-                case ArcadePocketsGrantType.Password:
-                    return GetTokenWithPasswordGrantType(options);
+                case ArcadePocketsGrantType.ResourceOwner:
+                    return GetTokenWithPassword(options);
                 default:
                     return null;
             }
         }
 
-        public JwtSecurityToken GetRefreshToken(string refreshToken, JwtManagerOptions options)
+        public JwtSecurityToken GetRefreshToken(JwtManagerOptions options, string refreshToken = "")
         {
             switch (options.GrantType)
             {
-                case ArcadePocketsGrantType.Password:
-                    return GetRefreshTokenWithPasswordGrantType(refreshToken, options);
+                case ArcadePocketsGrantType.ResourceOwner:
+                    {
+                        if (string.IsNullOrEmpty(refreshToken))
+                            return GetTokenWithPassword(options);
+                        else
+                            return GetRefreshTokenWithPassword(refreshToken, options);
+                    }
                 default:
                     return null;
             }
         }
 
-        private JwtSecurityToken GetTokenWithPasswordGrantType(JwtManagerOptions options)
+        private JwtSecurityToken GetTokenWithPassword(JwtManagerOptions options)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, options.TokenIssuerUri);
 
@@ -58,7 +63,7 @@ namespace ArcadePockets.Managers.Jwt
             return token;
         }
 
-        private JwtSecurityToken GetRefreshTokenWithPasswordGrantType(string refreshToken, JwtManagerOptions options)
+        private JwtSecurityToken GetRefreshTokenWithPassword(string refreshToken, JwtManagerOptions options)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, options.TokenIssuerUri);
 
