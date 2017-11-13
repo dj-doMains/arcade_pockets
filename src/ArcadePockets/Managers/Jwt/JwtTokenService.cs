@@ -35,7 +35,7 @@ namespace ArcadePockets.Managers.Jwt
                         if (string.IsNullOrEmpty(refreshToken))
                             return GetTokenWithPassword(options);
                         else
-                            return GetRefreshTokenWithPassword(refreshToken, options);
+                            return GetTokenFromRefreshToken(refreshToken, options);
                     }
                 default:
                     return null;
@@ -66,15 +66,17 @@ namespace ArcadePockets.Managers.Jwt
             return token;
         }
 
-        private JwtSecurityToken GetRefreshTokenWithPassword(string refreshToken, JwtManagerOptions options)
+        private JwtSecurityToken GetTokenFromRefreshToken(string refreshToken, JwtManagerOptions options)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, options.TokenIssuerUri);
 
-            var keyValues = new List<KeyValuePair<string, string>>();
-            keyValues.Add(new KeyValuePair<string, string>("client_id", options.ClientID));
-            keyValues.Add(new KeyValuePair<string, string>("client_secret", options.ClientSecret));
-            keyValues.Add(new KeyValuePair<string, string>("grant_type", "refresh_token"));
-            keyValues.Add(new KeyValuePair<string, string>("refresh_token", refreshToken));
+            var keyValues = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("client_id", options.ClientID),
+                new KeyValuePair<string, string>("client_secret", options.ClientSecret),
+                new KeyValuePair<string, string>("grant_type", "refresh_token"),
+                new KeyValuePair<string, string>("refresh_token", refreshToken)
+            };
 
             request.Content = new FormUrlEncodedContent(keyValues);
 
